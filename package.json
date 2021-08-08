@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/vue-toolbar-button",
   "version": "0.0.3",
-  "build": "15",
+  "build": "17",
   "description": "Vue Toolbar Button provides a multipurpose button which fits nicely in toolbars",
   "keywords": [
     "vue",
@@ -27,10 +27,10 @@
     "build:watch": "npm run bump && NODE_ENV=production webpack --progress --hide-modules --watch",
     "lint": "./tasks/lint.js",
     "dev": "NODE_ENV=development webpack --progress --hide-modules",
-    "test": "./tasks/test.js",
+    "test": "jest ./__tests__/*.spec.js",
     "todo": "leasot -x './**/*.{ts,js,vue,sh,md}' --ignore './node_modules,./dist,./demo/node_modules' --tags 'review,note' --inline-files",
     "todo:print": "npm run todo && leasot -x './**/*.{ts,js,vue,sh,md}' --ignore './node_modules,./dist,./demo/node_modules' --tags 'review,note' --inline-files --reporter=vscode > TODO.md && echo './TODO.md created successfully'",
-    "prepublish": "npm run lint && npm run test && npm run build",
+    "pre-publish": "npm run lint && npm run test && npm run build",
     "watch": "NODE_ENV=development webpack --progress --hide-modules --watch"
   },
   "repository": {

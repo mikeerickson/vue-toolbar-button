@@ -7,21 +7,21 @@
                 Licensed under the MIT license.  See LICENSE in the project root for license information.
             -->
         </div>
-        <span :class="toolbarButton" @click="toggleMenu">
+        <span :class="toolbarButtonClass" @click="toggleMenu">
             <i v-show="icon.length > 0 && !hasIconSlot" style="padding-left: 2px; padding-right: 4px;" :class="icon"></i>
-            <span v-if="hasIconSlot" class="icon icon-slot">
-                <slot name="icon" class="icon-slot"></slot>
+            <span v-if="hasIconSlot" class="vue-toolbar-button-icon vue-toolbar-button-icon-slot">
+                <slot name="icon" class="vue-toolbar-button-icon-slot"></slot>
             </span>
 
             <span :class="hasDefaultSlot ? 'vue-toolbar-button-slot' : null">
                 <slot></slot>
             </span>
 
-            <span v-if="hasArrowSlot" class="icon arrow">
+            <span v-if="hasArrowSlot" class="vue-toolbar-button-icon arrow">
                 <slot name="arrow"></slot>
             </span>
 
-            <span v-if="!hasArrowSlot && downArrow && options.length > 0" :class="arrowSize === 'mini' ? 'arrow icon-mini' : 'arrow icon'">
+            <span v-if="!hasArrowSlot && downArrow && options.length > 0" :class="arrowSize === 'mini' ? 'arrow vue-toolbar-button-icon-mini' : 'arrow vue-toolbar-button-icon'">
                 <svg class="arrow w-6 h-6" fill="currentColor" style="user-select: auto;" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                     <path
                         fill-rule="evenodd"
@@ -33,9 +33,23 @@
             </span>
             <template v-if="options.length > 0">
                 <ul :data-name="name" class="vue-toolbar-button-dropdown-menu vue-toolbar-button-dropdown" v-show="showMenu">
-                    <li class="vue-toolbar-button-dropdown-menu-item" v-for="(option, idx) in options" :key="idx">
+                    <li
+                        :class="
+                            typeof option === 'object' && option.hasOwnProperty('disabled') && option.disabled
+                                ? 'vue-toolbar-button-dropdown-menu-item-disabled'
+                                : 'vue-toolbar-button-dropdown-menu-item'
+                        "
+                        :style="typeof option === 'object' && option.hasOwnProperty('separator') && option.separator ? 'height: 3px; margin-right: 3px' : ''"
+                        v-for="(option, idx) in options"
+                        :key="idx"
+                    >
                         <a href="javascript:void(0)" @click="onButtonClick(option)">
-                            {{ option }}
+                            <span style="height: 3px" v-if="typeof option === 'object' && option.hasOwnProperty('separator') && option.separator">
+                                <span class="line"></span>
+                            </span>
+                            <span v-else>
+                                {{ typeof option === "string" ? option : option.value }}
+                            </span>
                         </a>
                     </li>
                 </ul>
@@ -45,7 +59,7 @@
 </template>
 
 <script>
-let VERSION = "v0.0.3 -- 2021-08-05 07:30 AM"
+let VERSION = "v0.0.4 (17) -- 2021-08-08 10:30 AM"
 
 // TODO: Implement `styles` and `classes` props (if necessary)
 export default {
@@ -74,7 +88,15 @@ export default {
                 this.showMenu = false
             }
 
-            this.$emit("buttonClick", { name: this.name, menuItem })
+            if (typeof menuItem === "object") {
+                if ((menuItem.hasOwnProperty("disabled") && menuItem.disabled) || (menuItem.hasOwnProperty("separator") && menuItem.separator)) {
+                    // do nothing, disabled item
+                } else {
+                    this.$emit("buttonClick", { name: this.name, slug: menuItem.slug, menuItem: menuItem.value })
+                }
+            } else {
+                this.$emit("buttonClick", { name: this.name, menuItem })
+            }
         },
 
         getBodyHeight() {
@@ -83,6 +105,11 @@ export default {
         },
 
         toggleMenu(event) {
+            let hasArrow =
+                event.path.filter(item => {
+                    return typeof item.className === "string" && item.className.includes("arrow")
+                }).length > 0
+
             let className = event.path[0].className
             if (className.length === 0 && !this.dropdownOnly) {
                 return
@@ -91,9 +118,7 @@ export default {
                 className = className.hasOwnProperty("baseVal") ? className.baseVal : ""
             }
 
-            let className1 = typeof event.path[1].className === "string" ? event.path[1].className : ""
-
-            if ((this.name.length > 0 && className.includes("arrow")) || this.dropdownOnly || className1.includes("arrow")) {
+            if ((this.name.length > 0 && hasArrow) || this.dropdownOnly) {
                 if (this.name.length === 0) {
                     console.error(`VueToolbarButton: missing 'name' prop`)
                     return
@@ -114,7 +139,13 @@ export default {
                     console.error(`VueToolbarButton: ${name}`)
                 }
 
-                this.$emit("buttonClick", { name, menuItem: null })
+                // let className = event.target.hasOwnProperty("className") ? event.target.className : ""
+
+                if (event.target.className === "line") {
+                    //
+                } else {
+                    this.$emit("buttonClick", { name, menuItem: null })
+                }
             }
         },
 
@@ -156,7 +187,7 @@ export default {
             return Object.keys(this.$slots).includes("arrow")
         },
 
-        toolbarButton() {
+        toolbarButtonClass() {
             if (this.options.length > 0) {
                 let defaultClass = !this.disabled ? "vue-toolbar-button-with-dropdown" : "vue-toolbar-button-disabled"
                 if (this.showMenu) {
@@ -172,19 +203,23 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$border-color: #e7e7e7;
+$button-border-color: lightgray;
+$button-hover-background-color: #e7edfd;
+
 .vue-toolbar-button-template {
     font-family: inherit;
 }
 
 .vue-toolbar-button {
     font-family: inherit;
-    border: 1px solid #e7e7e7;
+    border: 1px solid $button-border-color;
     padding: 6px;
     padding-bottom: 4px;
     border-radius: 4px;
     cursor: pointer;
     &:hover {
-        background-color: #e7edfd;
+        background-color: $button-hover-background-color;
     }
     text-align: center;
     margin-right: 6px;
@@ -192,21 +227,21 @@ export default {
 
 .vue-toolbar-button-with-dropdown {
     font-family: inherit;
-    border: 1px solid #e7e7e7;
+    border: 1px solid $button-border-color;
     padding: 6px;
     padding-bottom: 4px;
     border-radius: 4px;
     cursor: pointer;
     width: 1500px;
     &:hover {
-        background-color: #e7edfd;
+        background-color: $button-hover-background-color;
     }
     margin-right: 6px;
 }
 
 .vue-toolbar-button-with-dropdown-open {
     font-family: inherit;
-    border: 1px solid #e7e7e7;
+    border: 1px solid $button-border-color;
     padding: 6px;
     padding-bottom: 4px;
     border-radius: 4px;
@@ -217,7 +252,7 @@ export default {
 }
 
 .vue-toolbar-button-disabled {
-    border: 1px solid #e7e7e7;
+    border: 1px solid $border-color;
     padding: 6px;
     padding-bottom: 4px;
     border-radius: 4px;
@@ -253,13 +288,33 @@ export default {
     background-color: white;
     margin-left: 10px;
     margin-top: 10px;
-    border: 1px solid #e7e7e7;
+    border: 1px solid $border-color;
 }
 
 .vue-toolbar-button-dropdown-menu-item {
     height: 28px;
     width: 100%;
     background: white;
+    padding-top: 6px;
+}
+
+.vue-toolbar-button-dropdown-menu-item-disabled {
+    height: 28px;
+    width: 100%;
+    color: lightgray;
+    padding-top: 6px;
+    background-color: white;
+}
+
+.vue-toolbar-button-dropdown-menu-item-disabled > a {
+    display: block;
+    clear: both;
+    font-weight: normal;
+    color: lightgray;
+    white-space: nowrap;
+    text-decoration: none;
+    padding-left: 4px;
+    line-height: 2;
 }
 
 .vue-toolbar-button-dropdown-menu-item > a {
@@ -274,13 +329,14 @@ export default {
 }
 
 .vue-toolbar-button-dropdown-menu-item > a:hover {
-    background-color: #e7e7e7;
+    background-color: $button-hover-background-color;
+    border-radius: 4px;
     line-height: 2;
     padding-right: 5px;
     margin-right: 5px;
 }
 
-.icon {
+.vue-toolbar-button-icon {
     vertical-align: middle;
     margin-top: -2px;
     display: inline-block;
@@ -289,12 +345,29 @@ export default {
     overflow: hidden;
 }
 
-.icon-mini {
+.vue-toolbar-button-icon-mini {
     vertical-align: middle;
     margin-top: -2px;
     display: inline-block;
     width: 12px;
     height: 12px;
     overflow: hidden;
+}
+
+.line {
+    display: inline;
+    z-index: 100;
+    float: left;
+    clear: left;
+    padding-right: 5px;
+}
+
+.line::after {
+    position: absolute;
+    content: "\00a0";
+    width: 88%;
+    margin-top: -25px;
+    border-bottom: 1px solid #e7e7e7;
+    z-index: 0;
 }
 </style>

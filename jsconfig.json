@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"lib": [
+			"dom",
+			"es2015"
+		],
+		"module": "es2015",
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"jsx": "preserve",
+		"jsxFactory": "h",
+		"baseUrl": ".",
+		"paths": {
+			"components/*": [
+				"src/*"
+			]
+		}
+	},
+	"include": [
+		"./**/*.ts",
+		"./src/**/*",
+		"./resources/js/**/*",
+		"resources/js/utils/query2.js",
+	],
+	"compileOnSave": false
+}
