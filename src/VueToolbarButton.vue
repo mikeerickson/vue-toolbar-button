@@ -45,7 +45,7 @@
                     >
                         <a href="javascript:void(0)" @click="onButtonClick(option)">
                             <span style="height: 3px" v-if="typeof option === 'object' && option.hasOwnProperty('separator') && option.separator">
-                                <span class="line"></span>
+                                <span class="vue-toolbar-button-line"></span>
                             </span>
                             <span v-else>
                                 {{ typeof option === "string" ? option : option.value }}
@@ -59,9 +59,8 @@
 </template>
 
 <script>
-let VERSION = "v0.0.4 (17) -- 2021-08-08 10:30 AM"
+let VERSION = "v0.0.4 (19) -- 2021-08-08 10:30 PM"
 
-// TODO: Implement `styles` and `classes` props (if necessary)
 export default {
     name: "vue-toolbar-button",
     components: {},
@@ -90,7 +89,7 @@ export default {
 
             if (typeof menuItem === "object") {
                 if ((menuItem.hasOwnProperty("disabled") && menuItem.disabled) || (menuItem.hasOwnProperty("separator") && menuItem.separator)) {
-                    // do nothing, disabled item
+                    // do nothing, disabled or separator menu item
                 } else {
                     this.$emit("buttonClick", { name: this.name, slug: menuItem.slug, menuItem: menuItem.value })
                 }
@@ -114,6 +113,7 @@ export default {
             if (className.length === 0 && !this.dropdownOnly) {
                 return
             }
+
             if (typeof className === "object") {
                 className = className.hasOwnProperty("baseVal") ? className.baseVal : ""
             }
@@ -139,11 +139,7 @@ export default {
                     console.error(`VueToolbarButton: ${name}`)
                 }
 
-                // let className = event.target.hasOwnProperty("className") ? event.target.className : ""
-
-                if (event.target.className === "line") {
-                    //
-                } else {
+                if (event.target.className !== "vue-toolbar-button-line") {
                     this.$emit("buttonClick", { name, menuItem: null })
                 }
             }
@@ -354,7 +350,7 @@ $button-hover-background-color: #e7edfd;
     overflow: hidden;
 }
 
-.line {
+.vue-toolbar-button-line {
     display: inline;
     z-index: 100;
     float: left;
@@ -362,7 +358,7 @@ $button-hover-background-color: #e7edfd;
     padding-right: 5px;
 }
 
-.line::after {
+.vue-toolbar-button-line::after {
     position: absolute;
     content: "\00a0";
     width: 88%;

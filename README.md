@@ -147,6 +147,21 @@ VueToolbarButton provides the following `slots`, which can be used to override t
 | `icon`    | Can be used in place of "icon" prop to use svg icons, etc |
 | `arrow`   | Can be used in place of default down arrow                |
 
+## References
+
+### svg icons
+
+If you are looking for svg based icons, there are a number of nice places. The following is just a small subset of resources.
+
+**hericons**
+One of my favorite sources for svg icons and the source used for some of the demo icons [heroicons.com](https://heroicons.dev/)
+
+**iconfinder**
+Another source of svg based icons [iconfinder](https://www.iconfinder.com/)
+
+**icon8**
+This site has a huge collection of icons, available in both svg and png format [icon8](https://icons8.com/icons)
+
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
