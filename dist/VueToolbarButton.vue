@@ -59,7 +59,7 @@
 </template>
 
 <script>
-let VERSION = "v0.0.4 (18) -- 2021-08-08 10:30 PM"
+let VERSION = "v0.0.4 (19) -- 2021-08-08 10:30 PM"
 
 export default {
     name: "vue-toolbar-button",

@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/vue-toolbar-button",
   "version": "0.0.4",
-  "build": "19",
+  "build": "20",
   "description": "Vue Toolbar Button provides a multipurpose button which fits nicely in toolbars",
   "keywords": [
     "vue",
